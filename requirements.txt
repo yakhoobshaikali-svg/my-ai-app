@@ -63,3 +63,4 @@ typer-slim==0.24.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 Werkzeug==3.1.6
+gunicorn
