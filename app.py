@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 import PyPDF2
-from google import genai
+from groq import Groq
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "uploads"
@@ -10,7 +10,7 @@ app.config["UPLOAD_FOLDER"] = "uploads"
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
-client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.route('/')
 def home():
@@ -54,11 +54,12 @@ def upload_file():
     )
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1024
         )
-        ai_output = response.text
+        ai_output = response.choices[0].message.content
     except Exception as e:
         ai_output = f"Error generating summary: {str(e)}"
 
