@@ -57,19 +57,23 @@ def upload_file():
     {text_content[:4000]}
     """
 
-    response = model.generate_content(prompt)
+   response = model.generate_content(prompt)
 
-    # Fix: safely extract text from Gemini response
-    ai_output = None
-    if hasattr(response, "text") and response.text:
-        ai_output = response.text
-    elif hasattr(response, "candidates"):
-        try:
-            ai_output = response.candidates[0].content.parts[0].text
-        except Exception:
-            ai_output = "No summary generated."
+# Safely extract text from Gemini response
+ai_output = None
+if hasattr(response, "text") and response.text:
+    ai_output = response.text
+elif hasattr(response, "candidates"):
+    try:
+        ai_output = response.candidates[0].content.parts[0].text
+    except Exception:
+        ai_output = "No summary generated."
 
-    return jsonify({"result": ai_output})
+if not ai_output:
+    ai_output = "No summary generated. Check if your PDF has selectable text."
+
+return jsonify({"result": ai_output})
+
 
 
 if __name__ == "__main__":
