@@ -21,7 +21,7 @@ if not os.path.exists(app.config["UPLOAD_FOLDER"]):
 
 # Configure Gemini API (new SDK)
 client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.0-flash"
 
 @app.route('/')
 def home():
