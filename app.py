@@ -35,12 +35,16 @@ def upload_file():
         with open(filepath, "rb") as f:
             reader = PyPDF2.PdfReader(f)
             for page in reader.pages:
-                text_content += page.extract_text()
+                if page.extract_text():
+                    text_content += page.extract_text()
     elif filename.endswith(".txt"):
         with open(filepath, "r", encoding="utf-8") as f:
             text_content = f.read()
     else:
         return jsonify({"error": "Only PDF and TXT supported"}), 400
+
+    if not text_content.strip():
+        return jsonify({"error": "No text extracted from file"}), 400
 
     prompt = f"""
     From the following study material:
@@ -55,7 +59,17 @@ def upload_file():
 
     response = model.generate_content(prompt)
 
-    return jsonify({"result": response.text})
+    # Fix: safely extract text from Gemini response
+    ai_output = None
+    if hasattr(response, "text") and response.text:
+        ai_output = response.text
+    elif hasattr(response, "candidates"):
+        try:
+            ai_output = response.candidates[0].content.parts[0].text
+        except Exception:
+            ai_output = "No summary generated."
+
+    return jsonify({"result": ai_output})
 
 
 if __name__ == "__main__":
