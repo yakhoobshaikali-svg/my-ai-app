@@ -3,5 +3,3 @@ gunicorn
 google-genai
 PyPDF2
 werkzeug
-pytesseract
-pdf2image
