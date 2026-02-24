@@ -4,21 +4,69 @@
     <title>Smart Study AI</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #4e73df, #1cc88a);
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ff512f, #dd2476, #1e3c72, #2a5298);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
             text-align: center;
-            padding: 40px;
             color: white;
+            padding: 30px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 26px;
+            margin: 5px 0;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 500;
         }
 
         .box {
             background: white;
             color: black;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             width: 60%;
             margin: auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        input[type="file"] {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin-top: 15px;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
         }
 
         #output {
@@ -26,32 +74,21 @@
             text-align: left;
             white-space: pre-wrap;
             background: #f8f9fc;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            background: #4e73df;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background: #2e59d9;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
 
-    <h1>📘 Smart Study AI</h1>
+    <h1>Gouthami Institute of Technology & Management for Women, Proddatur</h1>
+    <h2>A Project on "Smart-Study AI Companion"</h2>
+    <h3>Sravanthi & Yasmeen III-II CSE</h3>
 
     <div class="box">
-        <h3>Upload PDF or TXT File</h3>
+        <h2 style="color:#4e73df;">📘 Upload PDF or TXT File</h2>
         <input type="file" id="fileInput" />
         <br>
         <button onclick="uploadFile()">Generate Summary</button>
@@ -72,7 +109,7 @@
             const formData = new FormData();
             formData.append("file", file);
 
-            document.getElementById("output").innerText = "Generating summary...";
+            document.getElementById("output").innerText = "Generating summary... Please wait ⏳";
 
             try {
                 const res = await fetch("/upload", {
