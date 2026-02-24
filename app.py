@@ -1,10 +1,17 @@
 import os
 from flask import Flask, request, jsonify, render_template
 import google.generativeai as genai
+from werkzeug.utils import secure_filename
+import PyPDF2
 
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = "uploads"
 
-# Configure API Key
+# Create uploads folder if not exists
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+
+# Configure Gemini API
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 model = genai.GenerativeModel('gemini-pro')
 
@@ -12,15 +19,44 @@ model = genai.GenerativeModel('gemini-pro')
 def home():
     return render_template("index.html")
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_message = data.get("message")
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
-    response = model.generate_content(user_message)
-    return jsonify({"response": response.text})
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(filepath)
+
+    text_content = ""
+
+    if filename.endswith(".pdf"):
+        with open(filepath, "rb") as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                text_content += page.extract_text()
+    elif filename.endswith(".txt"):
+        with open(filepath, "r", encoding="utf-8") as f:
+            text_content = f.read()
+    else:
+        return jsonify({"error": "Only PDF and TXT supported"}), 400
+
+    prompt = f"""
+    From the following study material:
+
+    1. Give a clear summary.
+    2. Provide important key points.
+    3. Generate 5 important exam questions.
+
+    Content:
+    {text_content[:4000]}
+    """
+
+    response = model.generate_content(prompt)
+
+    return jsonify({"result": response.text})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
