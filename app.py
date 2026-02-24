@@ -21,13 +21,11 @@ if not os.path.exists(app.config["UPLOAD_FOLDER"]):
 
 # Configure Gemini API
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
-
+model = genai.GenerativeModel('gemini-1.5-flash')   # ✅ FIXED model name
 
 @app.route('/')
 def home():
     return render_template("index.html")
-
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -69,27 +67,9 @@ def upload_file():
     # Limit text for Gemini prompt (first 4000 chars)
     prompt = f"""
 From the following study material:
-
 1. Give a clear summary.
 2. Provide important key points.
 3. Generate 5 important exam questions.
 
 Content:
-{text_content[:4000]}
-"""
-
-    # Call Gemini API
-    try:
-        response = model.generate_content(prompt)
-        ai_output = getattr(response, "output_text", None)
-        if not ai_output:
-            ai_output = "No summary generated. Check if your PDF has selectable text."
-    except Exception as e:
-        ai_output = f"Error generating summary: {str(e)}"
-
-    return jsonify({"result": ai_output})
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5001))
-    app.run(host='0.0.0.0', port=port)
+{text_c
