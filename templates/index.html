@@ -34,6 +34,10 @@
             border: none;
             cursor: pointer;
         }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +65,8 @@
 
             const formData = new FormData();
             formData.append("file", file);
+
+            document.getElementById("output").innerText = "Processing...";
 
             const res = await fetch("/upload", {
                 method: "POST",
