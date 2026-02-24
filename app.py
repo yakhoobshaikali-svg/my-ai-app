@@ -10,14 +10,16 @@ app.config["UPLOAD_FOLDER"] = "uploads"
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-
 @app.route('/')
 def home():
     return render_template("index.html")
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        return jsonify({"error": "GROQ_API_KEY not set in environment"}), 500
+
     if 'file' not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
@@ -54,6 +56,7 @@ def upload_file():
     )
 
     try:
+        client = Groq(api_key=api_key)
         response = client.chat.completions.create(
             model="llama3-8b-8192",
             messages=[{"role": "user", "content": prompt}],
