@@ -4,14 +4,14 @@
     <title>Smart Study AI</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #667eea, #764ba2);
-            color: white;
+            font-family: Arial;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
             text-align: center;
             padding: 40px;
+            color: white;
         }
 
-        .container {
+        .box {
             background: white;
             color: black;
             padding: 20px;
@@ -20,24 +20,19 @@
             margin: auto;
         }
 
-        input {
-            width: 70%;
-            padding: 10px;
-            margin-top: 10px;
+        #output {
+            margin-top: 20px;
+            text-align: left;
+            white-space: pre-wrap;
         }
 
         button {
             padding: 10px 20px;
-            background: #667eea;
+            margin-top: 10px;
+            background: #4e73df;
             color: white;
             border: none;
             cursor: pointer;
-        }
-
-        #response {
-            margin-top: 20px;
-            text-align: left;
-            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -45,25 +40,35 @@
 
     <h1>📘 Smart Study AI</h1>
 
-    <div class="container">
-        <input type="text" id="message" placeholder="Enter topic (e.g. Operating System Paging)" />
-        <button onclick="sendMessage()">Generate</button>
+    <div class="box">
+        <h3>Upload PDF or TXT File</h3>
+        <input type="file" id="fileInput" />
+        <br>
+        <button onclick="uploadFile()">Generate Summary</button>
 
-        <div id="response"></div>
+        <div id="output"></div>
     </div>
 
     <script>
-        async function sendMessage() {
-            const message = document.getElementById("message").value;
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
 
-            const res = await fetch("/chat", {
+            if (!file) {
+                alert("Please select a file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch("/upload", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: message })
+                body: formData
             });
 
             const data = await res.json();
-            document.getElementById("response").innerText = data.response;
+            document.getElementById("output").innerText = data.result || data.error;
         }
     </script>
 
