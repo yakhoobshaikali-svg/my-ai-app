@@ -4,7 +4,7 @@
     <title>Smart Study AI</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: linear-gradient(to right, #4e73df, #1cc88a);
             text-align: center;
             padding: 40px;
@@ -18,12 +18,16 @@
             border-radius: 10px;
             width: 60%;
             margin: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         #output {
             margin-top: 20px;
             text-align: left;
             white-space: pre-wrap;
+            background: #f8f9fc;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         button {
@@ -33,10 +37,12 @@
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
         }
 
-        input[type="file"] {
-            margin-top: 10px;
+        button:hover {
+            background: #2e59d9;
         }
     </style>
 </head>
@@ -66,15 +72,19 @@
             const formData = new FormData();
             formData.append("file", file);
 
-            document.getElementById("output").innerText = "Processing...";
+            document.getElementById("output").innerText = "Generating summary...";
 
-            const res = await fetch("/upload", {
-                method: "POST",
-                body: formData
-            });
+            try {
+                const res = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
 
-            const data = await res.json();
-            document.getElementById("output").innerText = data.result || data.error;
+                const data = await res.json();
+                document.getElementById("output").innerText = data.result || data.error;
+            } catch (error) {
+                document.getElementById("output").innerText = "Error: " + error.message;
+            }
         }
     </script>
 
