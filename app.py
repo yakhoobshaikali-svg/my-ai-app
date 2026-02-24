@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 import PyPDF2
-import google.generativeai as genai
+from google import genai
 
 # Optional OCR libraries
 try:
@@ -19,9 +19,9 @@ app.config["UPLOAD_FOLDER"] = "uploads"
 if not os.path.exists(app.config["UPLOAD_FOLDER"]):
     os.makedirs(app.config["UPLOAD_FOLDER"])
 
-# Configure Gemini API
-genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-model = genai.GenerativeModel('gemini-1.5-flash')   # ✅ FIXED model name
+# Configure Gemini API (new SDK)
+client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
+MODEL_NAME = "gemini-1.5-flash"
 
 @app.route('/')
 def home():
@@ -64,12 +64,28 @@ def upload_file():
     if not text_content.strip():
         return jsonify({"error": "No text extracted from file"}), 400
 
-    # Limit text for Gemini prompt (first 4000 chars)
-    prompt = f"""
-From the following study material:
-1. Give a clear summary.
-2. Provide important key points.
-3. Generate 5 important exam questions.
+    prompt = (
+        "From the following study material:\n"
+        "1. Give a clear summary.\n"
+        "2. Provide important key points.\n"
+        "3. Generate 5 important exam questions.\n\n"
+        "Content:\n"
+        + text_content[:4000]
+    )
 
-Content:
-{text_c
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt
+        )
+        ai_output = response.text
+        if not ai_output:
+            ai_output = "No summary generated. Check if your PDF has selectable text."
+    except Exception as e:
+        ai_output = f"Error generating summary: {str(e)}"
+
+    return jsonify({"result": ai_output})
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
