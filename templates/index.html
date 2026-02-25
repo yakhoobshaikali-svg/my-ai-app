@@ -1,129 +1,183 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Smart Study AI</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #ff512f, #dd2476, #1e3c72, #2a5298);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            text-align: center;
-            color: white;
-            padding: 30px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Study AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ff512f, #dd2476, #1e3c72, #2a5298);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: white;
+    }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
 
-        h1 {
-            font-size: 38px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+    .container {
+        text-align: center;
+        padding: 40px 20px;
+    }
 
-        h2 {
-            font-size: 26px;
-            margin: 5px 0;
-            font-weight: 600;
-        }
+    h1 {
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    }
 
-        h3 {
-            font-size: 20px;
-            margin-bottom: 30px;
-            font-weight: 500;
-        }
+    h2 {
+        font-size: 28px;
+        margin: 5px 0;
+        font-weight: 600;
+        text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+    }
 
-        .box {
-            background: white;
-            color: black;
-            padding: 25px;
-            border-radius: 15px;
-            width: 60%;
-            margin: auto;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
+    h3 {
+        font-size: 20px;
+        margin-bottom: 30px;
+        font-weight: 500;
+        text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+    }
 
-        input[type="file"] {
-            margin-top: 15px;
-        }
+    .box {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        padding: 30px;
+        border-radius: 20px;
+        width: 70%;
+        margin: 20px auto;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        transition: transform 0.3s;
+    }
 
-        button {
-            padding: 12px 25px;
-            margin-top: 15px;
-            background: linear-gradient(to right, #4e73df, #1cc88a);
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            transition: 0.3s;
-        }
+    .box:hover {
+        transform: translateY(-5px);
+    }
 
-        button:hover {
-            transform: scale(1.05);
-        }
+    input[type="file"] {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
 
-        #output {
-            margin-top: 20px;
-            text-align: left;
-            white-space: pre-wrap;
-            background: #f8f9fc;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-    </style>
+    button {
+        padding: 12px 30px;
+        margin-top: 20px;
+        background: linear-gradient(45deg, #4e73df, #1cc88a);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    }
+
+    button:hover {
+        transform: scale(1.08);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    #output {
+        margin-top: 25px;
+        text-align: left;
+        white-space: pre-wrap;
+        background: #f0f4f8;
+        color: #333;
+        padding: 20px;
+        border-radius: 12px;
+        max-height: 450px;
+        overflow-y: auto;
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+        color: #1cc88a;
+        font-weight: 700;
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .icon {
+        width: 80px;
+        margin-bottom: 15px;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+</style>
 </head>
 <body>
 
+<div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="AI Icon" class="icon"/>
     <h1>Gouthami Institute of Technology & Management for Women, Proddatur</h1>
-    <h2>A Project on "Smart-Study AI Companion"</h2>
+    <h2>Smart-Study AI Companion</h2>
     <h3>Sravanthi & Yasmeen III-II CSE</h3>
 
     <div class="box">
-        <h2 style="color:#4e73df;">📘 Upload PDF or TXT File</h2>
-        <input type="file" id="fileInput" />
+        <h2 class="section-title">📁 Upload Your Study File</h2>
+        <input type="file" id="fileInput" accept=".txt,.pdf"/>
         <br>
-        <button onclick="uploadFile()">Generate Summary</button>
+        <button onclick="uploadFile()">Generate Summary & Questions</button>
 
         <div id="output"></div>
     </div>
+</div>
 
-    <script>
-        async function uploadFile() {
-            const fileInput = document.getElementById("fileInput");
-            const file = fileInput.files[0];
+<script>
+async function uploadFile() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
 
-            if (!file) {
-                alert("Please select a file.");
-                return;
-            }
+    if (!file) {
+        alert("Please select a file.");
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-            document.getElementById("output").innerText = "Generating summary... Please wait ⏳";
+    const output = document.getElementById("output");
+    output.innerHTML = "Generating summary... ⏳";
 
-            try {
-                const res = await fetch("/upload", {
-                    method: "POST",
-                    body: formData
-                });
+    try {
+        const res = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
 
-                const data = await res.json();
-                document.getElementById("output").innerText = data.result || data.error;
-            } catch (error) {
-                document.getElementById("output").innerText = "Error: " + error.message;
-            }
+        const data = await res.json();
+
+        if(data.summary && data.questions){
+            output.innerHTML = `
+                <div class="section-title">📄 Summary</div>
+                <p>${data.summary}</p>
+                <div class="section-title">❓ Important Questions</div>
+                <ul>${data.questions.map(q => `<li>${q}</li>`).join('')}</ul>
+            `;
+        } else {
+            output.innerText = data.error || "Failed to generate summary.";
         }
-    </script>
+    } catch (err) {
+        output.innerText = "Error: " + err.message;
+    }
+}
+</script>
 
 </body>
 </html>
