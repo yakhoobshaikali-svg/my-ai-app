@@ -6,22 +6,13 @@
 <title>Smart Study AI — GITAMW</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ===== Reset & Variables ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --p:#7b1fa2;--p2:#9c27b0;--p3:#ce93d8;
-  --g:#ffd600;--g2:#ffab00;--g3:#fff9c4;
-  --dark:#0a0010;--card:rgba(255,255,255,0.04);
-}
+:root{--p:#7b1fa2;--p2:#9c27b0;--p3:#ce93d8;--g:#ffd600;--g2:#ffab00;--dark:#0a0010;--card:rgba(255,255,255,0.04);}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Inter',sans-serif;
-  background:var(--dark);
-  color:#fff;
-  min-height:100vh;
-  overflow-x:hidden;
-}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;}
 
-/* Background */
+/* ===== Background ===== */
 .bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden}
 .bg-wrap::before{
   content:'';position:absolute;inset:0;
@@ -32,195 +23,57 @@ body{
     linear-gradient(180deg, #0a0010 0%, #12002a 50%, #0a0010 100%);
 }
 .stars{position:absolute;inset:0}
-.stars span{
-  position:absolute;border-radius:50%;
-  background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite alternate;
-  opacity:var(--o,.5);
-}
+.stars span{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite alternate;opacity:var(--o,.5);}
 @keyframes twinkle{from{opacity:var(--o,.3);transform:scale(1)}to{opacity:1;transform:scale(1.4)}}
 .orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 12s ease-in-out infinite alternate;}
 .orb1{width:500px;height:500px;background:rgba(123,31,162,.25);top:-100px;left:-100px}
 .orb2{width:400px;height:400px;background:rgba(255,214,0,.1);bottom:-80px;right:-80px;animation-delay:-6s}
 @keyframes drift{from{transform:translate(0,0)}to{transform:translate(40px,30px)}}
 
-/* Header */
-header{
-  position:relative;z-index:10;
-  background:rgba(10,0,16,0.85);
-  backdrop-filter:blur(24px);
-  border-bottom:1px solid rgba(123,31,162,.4);
-  box-shadow:0 1px 30px rgba(123,31,162,.2);
-}
-.h-inner{
-  max-width:1200px;margin:0 auto;
-  padding:0 32px;
-  display:flex;align-items:center;
-}
-.logo-wrap{
-  padding:12px 0;
-  border-right:1px solid rgba(123,31,162,.3);
-  padding-right:28px;margin-right:28px;
-}
+/* ===== Header ===== */
+header{position:relative;z-index:10;background:rgba(10,0,16,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(123,31,162,.4);box-shadow:0 1px 30px rgba(123,31,162,.2);}
+.h-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;}
+.logo-wrap{padding:12px 0;border-right:1px solid rgba(123,31,162,.3);padding-right:28px;margin-right:28px;}
 .logo{height:82px;width:auto;display:block;}
 .h-text{flex:1}
-.h-text h1{
-  font-family:'Cinzel',serif;
-  font-size:clamp(12px,1.5vw,17px);
-  color:#e1bee7;font-weight:600;letter-spacing:.03em;line-height:1.35;
-}
+.h-text h1{font-family:'Cinzel',serif;font-size:clamp(12px,1.5vw,17px);color:#e1bee7;font-weight:600;letter-spacing:.03em;line-height:1.35;}
 .h-text p{font-size:11px;color:rgba(206,147,216,.6);margin-top:5px;letter-spacing:.1em;text-transform:uppercase}
-.h-badge{
-  background:linear-gradient(135deg,var(--p),var(--p2));
-  border:1px solid rgba(206,147,216,.3);
-  padding:10px 22px;border-radius:50px;
-  font-size:12px;font-weight:600;color:var(--g);
-  letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(123,31,162,.4);
-}
+.h-badge{background:linear-gradient(135deg,var(--p),var(--p2));border:1px solid rgba(206,147,216,.3);padding:10px 22px;border-radius:50px;font-size:12px;font-weight:600;color:var(--g);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;box-shadow:0 4px 20px rgba(123,31,162,.4);}
 
-/* Hero Section */
-.hero{
-  position:relative;z-index:5;
-  text-align:center;
-  padding:80px 24px 40px;
-}
-.hero-pill{
-  display:inline-flex;align-items:center;gap:10px;
-  background:rgba(123,31,162,.2);
-  border:1px solid rgba(206,147,216,.3);
-  border-radius:50px;padding:10px 24px;
-  font-size:13px;color:var(--p3);
-  font-weight:500;letter-spacing:.06em;text-transform:uppercase;
-  margin-bottom:32px;
-}
-.live-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--g);box-shadow:0 0 12px var(--g);
-  animation:blink 1.4s ease infinite;
-}
+/* ===== Hero ===== */
+.hero{position:relative;z-index:5;text-align:center;padding:80px 24px 40px;}
+.hero-pill{display:inline-flex;align-items:center;gap:10px;background:rgba(123,31,162,.2);border:1px solid rgba(206,147,216,.3);border-radius:50px;padding:10px 24px;font-size:13px;color:var(--p3);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:32px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 12px var(--g);animation:blink 1.4s ease infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-title{
-  font-family:'Cinzel',serif;
-  font-size:clamp(42px,7vw,88px);
-  font-weight:900;line-height:1;
-  letter-spacing:-.02em;
-  margin-bottom:8px;
-}
-.hero-title .line1{
-  background:linear-gradient(90deg,#fff 0%,var(--p3) 60%,var(--p) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.hero-title .line2{
-  background:linear-gradient(90deg,var(--g) 0%,var(--g2) 60%,#fff 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  display:block;font-size:.75em;margin-top:4px;
-}
-.hero-sub{
-  font-size:17px;color:rgba(255,255,255,.45);
-  max-width:520px;margin:20px auto 28px;
-  line-height:1.75;font-weight:300;
-}
+.hero-title{font-family:'Cinzel',serif;font-size:clamp(42px,7vw,88px);font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:8px;}
+.hero-title .line1{background:linear-gradient(90deg,#fff 0%,var(--p3) 60%,var(--p) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-title .line2{background:linear-gradient(90deg,var(--g) 0%,var(--g2) 60%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;font-size:.75em;margin-top:4px;}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.45);max-width:520px;margin:20px auto 28px;line-height:1.75;font-weight:300;}
 
-/* Features */
-.features{
-  display:flex;justify-content:center;gap:12px;
-  flex-wrap:wrap;padding:0 24px 56px;
-}
-.feat{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(123,31,162,.3);
-  border-radius:12px;padding:12px 18px;
-  font-size:13px;color:rgba(255,255,255,.55);
-  transition:.25s;
-}
-.feat:hover{border-color:rgba(206,147,216,.5);color:#fff;transform:translateY(-2px)}
-.feat .fi{font-size:18px}
+/* ===== Card / Upload ===== */
+.card-outer{max-width:680px;margin:0 auto;padding:0 24px 80px;position:relative;}
+.card{background:rgba(15,0,30,0.92);border:1px solid rgba(123,31,162,.35);border-radius:26px;padding:48px 44px;backdrop-filter:blur(30px);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);position:relative;overflow:hidden;margin-top:30px;}
+.card-icon{width:68px;height:68px;background:linear-gradient(135deg,var(--p),var(--p2));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 24px;box-shadow:0 10px 30px rgba(123,31,162,.5);}
+.card h3{text-align:center;color:#fff;font-family:'Cinzel',serif;font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:.02em;}
+.card>.desc{text-align:center;color:rgba(255,255,255,.35);font-size:14px;margin-bottom:30px;}
 
-/* Card */
-.card-outer{
-  max-width:680px;margin:0 auto;
-  padding:0 24px 80px;
-}
-.card-outer::before{
-  content:'';
-  position:absolute;inset:-2px;left:22px;right:22px;
-  border-radius:28px;
-  background:linear-gradient(135deg,var(--p),var(--g2),var(--p2));
-  z-index:-1;filter:blur(2px);opacity:.5;
-}
-.card{
-  background:rgba(15,0,30,0.92);
-  border:1px solid rgba(123,31,162,.35);
-  border-radius:26px;padding:48px 44px;
-  backdrop-filter:blur(30px);
-  box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);
-  position:relative;overflow:hidden;
-  margin-top:30px;
-}
-.card-icon{
-  width:68px;height:68px;
-  background:linear-gradient(135deg,var(--p),var(--p2));
-  border-radius:20px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin:0 auto 24px;
-  box-shadow:0 10px 30px rgba(123,31,162,.5);
-}
-.card h3{
-  font-family:'Cinzel',serif;
-  font-size:22px;text-align:center;color:#fff;
-  font-weight:700;margin-bottom:8px;letter-spacing:.02em;
-}
-.card>.desc{
-  text-align:center;color:rgba(255,255,255,.35);
-  font-size:14px;margin-bottom:30px;
-}
-
-/* Drag & Drop */
-.dz{
-  border:2px dashed rgba(123,31,162,.4);
-  border-radius:18px;padding:44px 20px;
-  text-align:center;cursor:pointer;
-  transition:.3s;position:relative;
-  background:rgba(123,31,162,.05);
-}
-.dz:hover,.dz.over{
-  border-color:var(--p3);
-  background:rgba(123,31,162,.12);
-  transform:scale(1.01);
-  box-shadow:0 0 30px rgba(123,31,162,.2);
-}
+/* ===== Drag & Drop ===== */
+.dz{border:2px dashed rgba(123,31,162,.4);border-radius:18px;padding:44px 20px;text-align:center;cursor:pointer;transition:.3s;position:relative;background:rgba(123,31,162,.05);}
+.dz:hover,.dz.over{border-color:var(--p3);background:rgba(123,31,162,.12);transform:scale(1.01);box-shadow:0 0 30px rgba(123,31,162,.2);}
 .dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .dz-icon{font-size:46px;margin-bottom:14px;display:block;animation:float 3s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .dz h4{font-size:16px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px}
 .dz p{font-size:13px;color:rgba(255,255,255,.35)}
 .ftags{display:flex;gap:8px;justify-content:center;margin-top:14px}
-.ftag{
-  background:rgba(255,214,0,.1);border:1px solid rgba(255,214,0,.25);
-  border-radius:6px;padding:4px 12px;font-size:11px;
-  color:var(--g);font-weight:700;letter-spacing:.06em;
-}
+.ftag{background:rgba(255,214,0,.1);border:1px solid rgba(255,214,0,.25);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--g);font-weight:700;letter-spacing:.06em;}
 #fn{margin-top:14px;font-size:13px;color:var(--p3);font-weight:500;min-height:20px;text-align:center;}
-.btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;padding:17px;margin-top:26px;
-  background:linear-gradient(135deg,#6a1b9a,#9c27b0,#ffd600);
-  background-size:200%;
-  color:#fff;border:none;border-radius:16px;
-  cursor:pointer;font-size:16px;font-weight:600;
-  font-family:'Inter',sans-serif;letter-spacing:.02em;
-  transition:.3s;box-shadow:0 8px 28px rgba(123,31,162,.5);
-  position:relative;overflow:hidden;
-}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:17px;margin-top:26px;background:linear-gradient(135deg,#6a1b9a,#9c27b0,#ffd600);background-size:200%;color:#fff;border:none;border-radius:16px;cursor:pointer;font-size:16px;font-weight:600;position:relative;overflow:hidden;transition:.3s;}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.15));}
-.btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 14px 36px rgba(123,31,162,.7);}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none;}
 @keyframes sp{to{transform:rotate(360deg)}}
-
-/* Output */
-#out{margin-top:30px;display:none}
+#out{margin-top:30px;display:none;}
 .sec{background:rgba(123,31,162,.07);border:1px solid rgba(123,31,162,.2);border-radius:16px;padding:24px;margin-bottom:14px;}
 .st{display:flex;align-items:center;gap:10px;font-family:'Cinzel',serif;font-size:16px;color:var(--p3);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(123,31,162,.2);font-weight:600;}
 .sec p{color:rgba(255,255,255,.72);font-size:14px;line-height:1.8}
@@ -233,13 +86,6 @@ header{
 /* Footer */
 footer{position:relative;z-index:5;border-top:1px solid rgba(123,31,162,.2);padding:24px 32px;text-align:center;color:rgba(255,255,255,.25);font-size:12px;letter-spacing:.05em;}
 footer b{color:var(--p3)}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){
-  .h-inner{padding:0 16px}
-  .logo{height:62px}
-  .h-badge{display:none}
-}
 </style>
 </head>
 <body>
@@ -253,7 +99,7 @@ footer b{color:var(--p3)}
 <header>
   <div class="h-inner">
     <div class="logo-wrap">
-      <img src="Gouthami_Auto4-1.png" class="logo" alt="GITAMW"/>
+      <img src="static/Gouthami_Auto4-1.png" class="logo" alt="GITAMW"/>
     </div>
     <div class="h-text">
       <h1>Gouthami Institute of Technology &amp; Management for Women</h1>
@@ -271,14 +117,6 @@ footer b{color:var(--p3)}
   </div>
   <p class="hero-sub">Upload any study material and instantly receive an AI-generated summary with important exam questions — study smarter, not harder.</p>
 </section>
-
-<div class="features">
-  <div class="feat"><span class="fi">⚡</span> Instant Summaries</div>
-  <div class="feat"><span class="fi">🎯</span> Exam Questions</div>
-  <div class="feat"><span class="fi">📄</span> PDF &amp; TXT</div>
-  <div class="feat"><span class="fi">🔒</span> Secure Upload</div>
-  <div class="feat"><span class="fi">🤖</span> AI-Powered</div>
-</div>
 
 <div class="card-outer">
   <div class="card">
@@ -309,9 +147,84 @@ footer b{color:var(--p3)}
 </footer>
 
 <script>
-// stars
+// ==== Stars ====
 const sc=document.getElementById('stars');
 for(let i=0;i<120;i++){
   const s=document.createElement('span');
   const sz=Math.random()*2+1;
-  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${Math.random()*0.5+0.3}`;
+  sc.appendChild(s);
+}
+
+// ==== File Upload Logic ====
+let selectedFile = null;
+const fi = document.getElementById('fi');
+const fn = document.getElementById('fn');
+const btn = document.getElementById('btn');
+const sp = document.getElementById('sp');
+const out = document.getElementById('out');
+
+function onFile(input) {
+    if(input.files.length > 0){
+        selectedFile = input.files[0];
+        fn.textContent = `📄 Selected: ${selectedFile.name}`;
+        btn.disabled = false;
+    } else {
+        selectedFile = null;
+        fn.textContent = '';
+        btn.disabled = true;
+    }
+}
+
+document.getElementById('dz').addEventListener('click', () => fi.click());
+document.getElementById('dz').addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dz').classList.add('over'); });
+document.getElementById('dz').addEventListener('dragleave', e => { e.preventDefault(); document.getElementById('dz').classList.remove('over'); });
+document.getElementById('dz').addEventListener('drop', e => {
+    e.preventDefault(); document.getElementById('dz').classList.remove('over');
+    if(e.dataTransfer.files.length > 0){ fi.files = e.dataTransfer.files; onFile(fi); }
+});
+
+function upload(){
+    if(!selectedFile) return;
+    btn.disabled = true;
+    sp.style.display = 'inline-block';
+    const btText = document.getElementById('bt');
+    btText.textContent = 'Uploading...';
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    fetch('/upload', { method: 'POST', body: formData })
+    .then(response => response.json())
+    .then(data => {
+        sp.style.display = 'none';
+        btText.textContent = '✨ Generate Summary & Questions';
+        btn.disabled = false;
+
+        out.style.display = 'block';
+        out.innerHTML = `
+            <div class="sec">
+                <div class="st">Summary:</div>
+                <p>${data.summary}</p>
+            </div>
+            <div class="sec">
+                <div class="st">Important Questions:</div>
+                <ul class="ql">
+                    ${data.questions.map(q=>`<li><div class="qn">Q</div>${q}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    })
+    .catch(err => {
+        sp.style.display = 'none';
+        btText.textContent = '✨ Generate Summary & Questions';
+        btn.disabled = false;
+        out.style.display = 'block';
+        out.innerHTML = `<div class="err">❌ Upload failed. Try again.</div>`;
+        console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>
