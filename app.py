@@ -2,13 +2,17 @@ from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
 from PyPDF2 import PdfReader
-import re
+import google.generativeai as genai
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# Configure Gemini
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 def extract_text_from_pdf(pdf_path):
@@ -21,34 +25,28 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 
-def generate_summary(text):
-    sentences = re.split(r'(?<=[.!?]) +', text)
-    sentences = [s.strip() for s in sentences if len(s.strip()) > 40]
-    return " ".join(sentences[:6]) if sentences else "Not enough content to summarize."
+def generate_ai_content(text):
+    prompt = f"""
+You are an academic assistant.
 
+From the following study material:
 
-def generate_questions(text):
-    sentences = re.split(r'(?<=[.!?]) +', text)
-    questions = []
+1. Generate a clear academic summary (200–300 words).
+2. Generate 8 important university-level exam questions.
+3. Questions must be meaningful and based strictly on the content.
 
-    keywords = ["is", "are", "was", "were", "can", "define", "explain", "describe"]
+Content:
+{text[:4000]}
+"""
 
-    for i, sentence in enumerate(sentences[:8]):
-        words = sentence.split()
-        if len(words) > 6:
-            main_word = words[0]
-            questions.append(f"Q{i+1}: What is meant by {main_word}?")
-            questions.append(f"Q{i+1+1}: Explain the concept of {main_word}.")
-        if len(questions) >= 5:
-            break
-
-    return questions if questions else ["No important questions generated."]
+    response = model.generate_content(prompt)
+    return response.text
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     summary = ""
-    important_questions = []
+    questions = []
 
     if request.method == 'POST':
         file = request.files.get('file')
@@ -64,13 +62,15 @@ def index():
                 with open(filepath, 'r', encoding='utf-8') as f:
                     content = f.read()
             else:
-                content = "Unsupported file type."
+                content = ""
 
-            content = content.replace('\n', ' ')
-            summary = generate_summary(content)
-            important_questions = generate_questions(content)
+            ai_output = generate_ai_content(content)
 
-    return render_template('index.html', summary=summary, questions=important_questions)
+            parts = ai_output.split("Questions")
+            summary = parts[0]
+            questions = parts[1].split("\n") if len(parts) > 1 else []
+
+    return render_template('index.html', summary=summary, questions=questions)
 
 
 if __name__ == '__main__':
