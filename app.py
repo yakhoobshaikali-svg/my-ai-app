@@ -7,11 +7,14 @@ import google.generativeai as genai
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
+# Create uploads folder if not exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Configure Gemini
+# Configure Gemini API
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+
+# Use stable working model
 model = genai.GenerativeModel("gemini-1.0-pro")
 
 
@@ -26,21 +29,27 @@ def extract_text_from_pdf(pdf_path):
 
 
 def generate_ai_content(text):
-    prompt = f"""
+    try:
+        prompt = f"""
 You are an academic assistant.
 
 From the following study material:
 
-1. Generate a clear academic summary (200–300 words).
-2. Generate 8 important university-level exam questions.
-3. Questions must be meaningful and based strictly on the content.
+1. Write a well-structured academic summary (200–300 words).
+2. Generate 8 meaningful university-level exam questions.
+3. Questions must strictly depend on the content.
+4. Clearly separate summary and questions.
+5. Format questions as numbered list.
 
 Content:
-{text[:4000]}
+{text[:3500]}
 """
 
-    response = model.generate_content(prompt)
-    return response.text
+        response = model.generate_content(prompt)
+        return response.text
+
+    except Exception as e:
+        return f"AI_ERROR::{str(e)}"
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -56,6 +65,7 @@ def index():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
+            # Extract content
             if filename.lower().endswith('.pdf'):
                 content = extract_text_from_pdf(filepath)
             elif filename.lower().endswith('.txt'):
@@ -64,11 +74,29 @@ def index():
             else:
                 content = ""
 
+            content = content.replace('\n', ' ')
+
             ai_output = generate_ai_content(content)
 
-            parts = ai_output.split("Questions")
-            summary = parts[0]
-            questions = parts[1].split("\n") if len(parts) > 1 else []
+            # If AI failed
+            if ai_output.startswith("AI_ERROR::"):
+                summary = "Error generating AI content."
+                questions = [ai_output]
+            else:
+                # Split summary and questions safely
+                lines = ai_output.split("\n")
+                summary_lines = []
+                question_lines = []
+
+                for line in lines:
+                    stripped = line.strip()
+                    if stripped.startswith(tuple(str(i) for i in range(1, 10))):
+                        question_lines.append(stripped)
+                    else:
+                        summary_lines.append(stripped)
+
+                summary = " ".join(summary_lines)
+                questions = question_lines
 
     return render_template('index.html', summary=summary, questions=questions)
 
