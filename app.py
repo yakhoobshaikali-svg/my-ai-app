@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
-from PyPDF2 import PdfReader  # for reading PDFs
+from PyPDF2 import PdfReader
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-# Ensure the upload folder exists
+# Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
 
 def extract_text_from_pdf(pdf_path):
     reader = PdfReader(pdf_path)
@@ -19,6 +20,7 @@ def extract_text_from_pdf(pdf_path):
             text += page_text + "\n"
     return text
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     summary = ""
@@ -26,29 +28,40 @@ def index():
 
     if request.method == 'POST':
         file = request.files.get('file')
+
         if file:
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            # Extract text based on file type
+            # Extract content
             if filename.lower().endswith('.pdf'):
                 content = extract_text_from_pdf(filepath)
             elif filename.lower().endswith('.txt'):
                 with open(filepath, 'r', encoding='utf-8') as f:
                     content = f.read()
             else:
-                content = "Unsupported file type. Please upload a PDF or TXT file."
+                content = "Unsupported file type. Please upload PDF or TXT."
 
-            # Generate placeholder summary and questions
-            summary = content[:500] + "..." if len(content) > 500 else content
-            important_questions = [
-                "Q1: Placeholder question 1?",
-                "Q2: Placeholder question 2?",
-                "Q3: Placeholder question 3?"
-            ]
+            # Clean content
+            content = content.replace('\n', ' ')
+            sentences = content.split('.')
+
+            # Generate Summary (First 5 meaningful sentences)
+            meaningful_sentences = [s.strip() for s in sentences if len(s.strip()) > 30]
+            summary = '. '.join(meaningful_sentences[:5]) + '.' if meaningful_sentences else "Not enough content to summarize."
+
+            # Generate Important Questions
+            for i, sentence in enumerate(meaningful_sentences[:5]):
+                words = sentence.split()
+                if len(words) > 5:
+                    important_questions.append(
+                        f"Q{i+1}: Explain {words[0]} {words[1]} {words[2]}."
+                    )
 
     return render_template('index.html', summary=summary, questions=important_questions)
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
