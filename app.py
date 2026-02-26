@@ -12,7 +12,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 # Configure Gemini
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 
 def extract_text_from_pdf(pdf_path):
