@@ -1,38 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Study AI</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298, #ff512f, #dd2476);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color: white;
+    text-align: center;
+}
+
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+.container {
+    padding: 40px;
+}
+
+.college-name {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.department {
+    font-size: 36px;
+    margin-top: 10px;
+}
+
+.project-info {
+    font-size: 22px;
+    margin-top: 10px;
+}
+
+form {
+    margin-top: 30px;
+}
+
+input[type="file"] {
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 25px;
+    background-color: yellow;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: orange;
+}
+
+.section-box {
+    background: rgba(255,255,255,0.15);
+    padding: 20px;
+    margin: 30px auto;
+    width: 80%;
+    border-radius: 12px;
+}
+
+ul {
+    text-align: left;
+    display: inline-block;
+}
+</style>
 </head>
+
 <body>
-<header>
-    <img src="{{ url_for('static', filename='images/gouthami_logo.png') }}" alt="Gouthami Logo" class="logo">
-    <h1>Smart Study AI</h1>
-</header>
 
-<main>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".txt,.pdf" required>
-        <button type="submit">Upload & Generate</button>
-    </form>
+<div class="container">
 
-    {% if summary %}
-    <section class="summary">
-        <h2>Summary</h2>
-        <p>{{ summary }}</p>
-    </section>
+<div class="college-name">
+Gouthami Institute of Technology & Management for Women, Proddatur
+</div>
 
-    <section class="questions">
-        <h2>Important Questions</h2>
-        <ul>
-            {% for q in questions %}
-            <li>{{ q }}</li>
-            {% endfor %}
-        </ul>
-    </section>
-    {% endif %}
-</main>
+<div class="department">
+Department of CSE
+</div>
+
+<div class="project-info">
+A Project Prepared By <br>
+S. Yasmin & Sravanthi - III-II CSE
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".txt,.pdf" required>
+    <button type="submit">Upload & Generate</button>
+</form>
+
+{% if summary %}
+<div class="section-box">
+    <h2>Summary</h2>
+    <p>{{ summary }}</p>
+</div>
+
+<div class="section-box">
+    <h2>Important Questions</h2>
+    <ul>
+        {% for q in questions %}
+        <li>{{ q }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+</div>
+
 </body>
 </html>
