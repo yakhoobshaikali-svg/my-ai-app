@@ -9,21 +9,18 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298, #ff512f, #dd2476);
-    background-size: 400% 400%;
-    animation: gradientBG 12s ease infinite;
+    background: 
+        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+        url("https://images.unsplash.com/photo-1523240795612-9a054b0db644");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: white;
     text-align: center;
 }
 
-@keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
-
 .container {
-    padding: 40px;
+    padding: 50px;
 }
 
 .college-name {
@@ -33,7 +30,8 @@ body {
 
 .department {
     font-size: 36px;
-    margin-top: 10px;
+    margin-top: 15px;
+    color: #FFD700;
 }
 
 .project-info {
@@ -42,7 +40,7 @@ body {
 }
 
 form {
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
 input[type="file"] {
@@ -51,25 +49,31 @@ input[type="file"] {
 }
 
 button {
-    padding: 12px 25px;
-    background-color: yellow;
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #ff512f, #dd2476);
     border: none;
+    color: white;
     font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
     font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: orange;
+    opacity: 0.8;
 }
 
 .section-box {
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    margin: 30px auto;
-    width: 80%;
-    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    margin: 40px auto;
+    width: 85%;
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+}
+
+h2 {
+    color: #00FFFF;
 }
 
 ul {
