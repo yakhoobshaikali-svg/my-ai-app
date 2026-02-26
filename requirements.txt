@@ -1,5 +1,4 @@
 flask
 gunicorn
-groq
 PyPDF2
-werkzeug
+google-generativeai
