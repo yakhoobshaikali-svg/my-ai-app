@@ -5,7 +5,7 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             margin: 0;
             padding: 40px;
@@ -14,8 +14,9 @@
         }
 
         .college-header {
-            font-size: 28px;
+            font-size: 34px;
             font-weight: bold;
+            letter-spacing: 1px;
         }
 
         .college-address {
@@ -24,53 +25,65 @@
         }
 
         .title {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .project-by {
+            font-size: 16px;
+            font-style: italic;
             margin-bottom: 30px;
+            opacity: 0.9;
         }
 
         .container {
             background: white;
             color: black;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 35px;
+            border-radius: 15px;
             max-width: 900px;
             margin: auto;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.3);
         }
 
         input[type="file"] {
             padding: 10px;
+            font-size: 15px;
         }
 
         button {
-            padding: 10px 20px;
-            background: #007BFF;
+            padding: 12px 25px;
+            background: #1e3c72;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
         }
 
         button:hover {
-            background: #0056b3;
+            background: #16325c;
         }
 
         .result {
             text-align: left;
             margin-top: 30px;
             background: #f4f4f4;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 12px;
         }
 
         .result h2 {
             color: #1e3c72;
+            margin-top: 20px;
         }
 
         .text-format {
             white-space: pre-wrap;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 15px;
         }
 
         .error {
@@ -84,7 +97,6 @@
 
 <body>
 
-    <!-- College Name -->
     <div class="college-header">
         Gouthami Institute of Technology & Management for Women
     </div>
@@ -93,9 +105,12 @@
         Proddatur, Andhra Pradesh
     </div>
 
-    <!-- Project Title -->
     <div class="title">
         📘 Smart Study AI – PDF Summary & Question Generator
+    </div>
+
+    <div class="project-by">
+        A Project Developed by Yasmeen & Sravanthi - III-II CSE Students
     </div>
 
     <div class="container">
@@ -114,14 +129,9 @@
 
         {% if summary %}
             <div class="result">
-                <h2>📘 Summary</h2>
+                <h2>📘 Summary & Questions</h2>
                 <div class="text-format">
                     {{ summary }}
-                </div>
-
-                <h2>📝 Important Questions</h2>
-                <div class="text-format">
-                    {{ questions }}
                 </div>
             </div>
         {% endif %}
