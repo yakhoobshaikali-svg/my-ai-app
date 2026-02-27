@@ -12,8 +12,10 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 def home():
     return render_template("index.html")
 
+
 @app.route("/upload", methods=["POST"])
 def upload():
+
     if "pdf_file" not in request.files:
         return "No file uploaded"
 
@@ -31,21 +33,23 @@ def upload():
         text = ""
 
         for page in reader.pages:
-            text += page.extract_text()
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
 
-        if not text:
+        if not text.strip():
             return "Could not extract text from PDF"
 
-        # 🔥 Limit text size to avoid quota issues
+        # 🔥 Limit text to avoid rate limits
         text = text[:3000]
 
         # -------- SUMMARY --------
         summary_response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "user",
-                    "content": f"Summarize this for exam preparation in simple points:\n{text}"
+                    "content": f"Summarize this for exam preparation in clear bullet points:\n{text}"
                 }
             ]
         )
@@ -54,7 +58,7 @@ def upload():
 
         # -------- QUESTIONS --------
         question_response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "user",
@@ -73,6 +77,7 @@ def upload():
 
     except Exception as e:
         return f"Error occurred: {str(e)}"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
