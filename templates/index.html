@@ -1,171 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study AI</title>
 
-<title>Smart-Study AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+        .college-header {
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-<style>
+        .college-address {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
 
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background:
-        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
-        url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3");
-    background-size: cover;
-    background-attachment: fixed;
-    color: white;
-}
+        .title {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
 
-/* Page Border */
-.wrapper {
-    border: 12px solid #00FFFF;
-    margin: 20px;
-    padding: 40px;
-    border-radius: 20px;
-    background: rgba(0,0,0,0.65);
-}
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+        }
 
-/* Project Title */
-.project-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 44px;
-    text-align: center;
-    color: #00FFFF;
-    margin-bottom: 10px;
-}
+        input[type="file"] {
+            padding: 10px;
+        }
 
-.project-subtitle {
-    text-align: center;
-    font-size: 20px;
-    color: #FFD700;
-    margin-bottom: 30px;
-}
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-/* College Info */
-.college-name {
-    font-size: 32px;
-    text-align: center;
-    font-weight: 600;
-}
+        button:hover {
+            background: #0056b3;
+        }
 
-.department {
-    font-size: 24px;
-    text-align: center;
-    margin-top: 5px;
-}
+        .result {
+            text-align: left;
+            margin-top: 30px;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+        }
 
-.project-by {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 18px;
-}
+        .result h2 {
+            color: #1e3c72;
+        }
 
-/* Upload Section */
-form {
-    text-align: center;
-    margin-top: 40px;
-}
+        .text-format {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
 
-input[type="file"] {
-    padding: 10px;
-    font-size: 16px;
-}
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 15px;
+        }
 
-button {
-    padding: 12px 30px;
-    font-size: 16px;
-    background: linear-gradient(45deg, #ff512f, #dd2476);
-    border: none;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-button:hover {
-    opacity: 0.8;
-}
-
-/* Output Sections */
-.section-box {
-    margin-top: 40px;
-    padding: 25px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 15px;
-    backdrop-filter: blur(6px);
-}
-
-.section-box h2 {
-    color: #00FFFF;
-    border-bottom: 2px solid #00FFFF;
-    padding-bottom: 10px;
-}
-
-ul {
-    margin-top: 20px;
-}
-
-li {
-    margin-bottom: 10px;
-}
-
-</style>
+    </style>
 </head>
 
 <body>
 
-<div class="wrapper">
+    <!-- College Name -->
+    <div class="college-header">
+        Gouthami Institute of Technology & Management for Women
+    </div>
 
-<div class="project-title">
-Smart-Study AI: Automated Academic Summarization & Question Generator
-</div>
+    <div class="college-address">
+        Proddatur, Andhra Pradesh
+    </div>
 
-<div class="project-subtitle">
-An Intelligent System for Analyzing Study Materials
-</div>
+    <!-- Project Title -->
+    <div class="title">
+        📘 Smart Study AI – PDF Summary & Question Generator
+    </div>
 
-<div class="college-name">
-Gouthami Institute of Technology & Management for Women, Proddatur
-</div>
+    <div class="container">
 
-<div class="department">
-Department of Computer Science & Engineering
-</div>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="pdf_file" accept=".pdf" required>
+            <br><br>
+            <button type="submit">Upload & Generate</button>
+        </form>
 
-<div class="project-by">
-A Project Prepared By <br>
-S. Yasmin & Sravanthi – III-II CSE
-</div>
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
 
-<form action="/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="pdf_file" accept=".pdf" required>
-    <button type="submit">Upload & Generate</button>
-</form>
+        {% if summary %}
+            <div class="result">
+                <h2>📘 Summary</h2>
+                <div class="text-format">
+                    {{ summary }}
+                </div>
 
-{% if summary %}
-<div class="section-box">
-    <h2>AI Generated Summary</h2>
-    <p>{{ summary }}</p>
-</div>
-{% endif %}
+                <h2>📝 Important Questions</h2>
+                <div class="text-format">
+                    {{ questions }}
+                </div>
+            </div>
+        {% endif %}
 
-{% if questions %}
-<div class="section-box">
-    <h2>Important Exam Questions</h2>
-    <ul>
-        {% for q in questions %}
-        <li>{{ q }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-
-</div>
+    </div>
 
 </body>
 </html>
