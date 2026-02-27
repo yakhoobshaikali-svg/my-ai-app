@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, render_template, request
 from PyPDF2 import PdfReader
 from groq import Groq
 
@@ -8,84 +8,77 @@ app = Flask(__name__)
 # Initialize Groq client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return """
-    <h2>📘 Smart Study AI</h2>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="pdf_file" accept=".pdf" required>
-        <button type="submit">Upload & Generate</button>
-    </form>
-    """
 
-@app.route("/upload", methods=["POST"])
-def upload():
+    summary = None
+    questions = None
+    error = None
 
-    if "pdf_file" not in request.files:
-        return "No file uploaded"
+    if request.method == "POST":
 
-    file = request.files["pdf_file"]
+        if "pdf_file" not in request.files:
+            error = "No file uploaded"
+        else:
+            file = request.files["pdf_file"]
 
-    if file.filename == "":
-        return "No selected file"
+            if file.filename == "":
+                error = "No file selected"
 
-    if not file.filename.endswith(".pdf"):
-        return "Please upload a PDF file"
+            elif not file.filename.endswith(".pdf"):
+                error = "Please upload a PDF file"
 
-    try:
-        reader = PdfReader(file)
-        text = ""
+            else:
+                try:
+                    reader = PdfReader(file)
+                    text = ""
 
-        for page in reader.pages:
-            extracted = page.extract_text()
-            if extracted:
-                text += extracted
+                    for page in reader.pages:
+                        extracted = page.extract_text()
+                        if extracted:
+                            text += extracted
 
-        if not text.strip():
-            return "Could not extract text from PDF"
+                    if not text.strip():
+                        error = "Could not extract text from PDF"
+                    else:
+                        # Limit text to avoid rate limits
+                        text = text[:3000]
 
-        # Limit text size to avoid rate limits
-        text = text[:3000]
+                        # SUMMARY
+                        summary_response = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": f"Summarize this for exam preparation in bullet points:\n{text}"
+                                }
+                            ]
+                        )
 
-        # SUMMARY
-        summary_response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Summarize this for exam preparation in clear bullet points:\n{text}"
-                }
-            ]
-        )
+                        summary = summary_response.choices[0].message.content
 
-        summary = summary_response.choices[0].message.content
+                        # QUESTIONS
+                        question_response = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": f"Generate 5 important exam questions:\n{text}"
+                                }
+                            ]
+                        )
 
-        # QUESTIONS
-        question_response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Generate 5 important exam questions from this content:\n{text}"
-                }
-            ]
-        )
+                        questions = question_response.choices[0].message.content
 
-        questions = question_response.choices[0].message.content
+                except Exception as e:
+                    error = f"Error occurred: {str(e)}"
 
-        return f"""
-        <h2>📘 Summary</h2>
-        <pre>{summary}</pre>
-
-        <h2>📝 Important Questions</h2>
-        <pre>{questions}</pre>
-
-        <br><br>
-        <a href="/">⬅ Back</a>
-        """
-
-    except Exception as e:
-        return f"Error occurred: {str(e)}"
+    return render_template(
+        "index.html",
+        summary=summary,
+        questions=questions,
+        error=error
+    )
 
 
 if __name__ == "__main__":
