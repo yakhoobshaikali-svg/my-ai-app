@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, request
 from PyPDF2 import PdfReader
 from groq import Groq
 
@@ -10,8 +10,13 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.route("/")
 def home():
-    return render_template("index.html")
-
+    return """
+    <h2>📘 Smart Study AI</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="pdf_file" accept=".pdf" required>
+        <button type="submit">Upload & Generate</button>
+    </form>
+    """
 
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -28,7 +33,6 @@ def upload():
         return "Please upload a PDF file"
 
     try:
-        # Read PDF
         reader = PdfReader(file)
         text = ""
 
@@ -40,10 +44,10 @@ def upload():
         if not text.strip():
             return "Could not extract text from PDF"
 
-        # 🔥 Limit text to avoid rate limits
+        # Limit text size to avoid rate limits
         text = text[:3000]
 
-        # -------- SUMMARY --------
+        # SUMMARY
         summary_response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
@@ -56,7 +60,7 @@ def upload():
 
         summary = summary_response.choices[0].message.content
 
-        # -------- QUESTIONS --------
+        # QUESTIONS
         question_response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
@@ -69,11 +73,16 @@ def upload():
 
         questions = question_response.choices[0].message.content
 
-        return render_template(
-            "result.html",
-            summary=summary,
-            questions=questions
-        )
+        return f"""
+        <h2>📘 Summary</h2>
+        <pre>{summary}</pre>
+
+        <h2>📝 Important Questions</h2>
+        <pre>{questions}</pre>
+
+        <br><br>
+        <a href="/">⬅ Back</a>
+        """
 
     except Exception as e:
         return f"Error occurred: {str(e)}"
