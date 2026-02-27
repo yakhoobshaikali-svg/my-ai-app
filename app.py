@@ -1,132 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Smart Study AI</title>
+from flask import Flask, render_template, request
+from groq import Groq
+import PyPDF2
+import os
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            margin: 0;
-            padding: 40px;
-            text-align: center;
-            color: white;
-        }
+app = Flask(__name__)
 
-        .college-header {
-            font-size: 28px;
-            font-weight: bold;
-        }
+# Use environment variable (important for Render)
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-        .college-address {
-            font-size: 18px;
-            margin-bottom: 25px;
-        }
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-        .title {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
+@app.route("/upload", methods=["POST"])
+def upload():
 
-        .container {
-            background: white;
-            color: black;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 900px;
-            margin: auto;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
-        }
+    if "pdf_file" not in request.files:
+        return render_template("index.html", error="No file uploaded")
 
-        input[type="file"] {
-            padding: 10px;
-        }
+    file = request.files["pdf_file"]
 
-        button {
-            padding: 10px 20px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+    if file.filename == "":
+        return render_template("index.html", error="Please select a PDF file")
 
-        button:hover {
-            background: #0056b3;
-        }
+    try:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = ""
 
-        .result {
-            text-align: left;
-            margin-top: 30px;
-            background: #f4f4f4;
-            padding: 20px;
-            border-radius: 10px;
-        }
+        for page in pdf_reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
 
-        .result h2 {
-            color: #1e3c72;
-        }
+        if not text.strip():
+            return render_template("index.html", error="Could not extract text from PDF")
 
-        .text-format {
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
+        text = text[:4000]
 
-        .error {
-            color: red;
-            font-weight: bold;
-            margin-top: 15px;
-        }
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+From the following text:
 
-    </style>
-</head>
+{text}
 
-<body>
+Give:
+1) Clear Summary
+2) 10 Important Exam Questions (numbered)
+"""
+                }
+            ],
+            temperature=0.3,
+        )
 
-    <!-- College Name -->
-    <div class="college-header">
-        Gouthami Institute of Technology & Management for Women
-    </div>
+        result = response.choices[0].message.content
 
-    <div class="college-address">
-        Proddatur, Andhra Pradesh
-    </div>
+        return render_template("index.html", summary=result)
 
-    <!-- Project Title -->
-    <div class="title">
-        📘 Smart Study AI – PDF Summary & Question Generator
-    </div>
+    except Exception as e:
+        return render_template("index.html", error=str(e))
 
-    <div class="container">
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="pdf_file" accept=".pdf" required>
-            <br><br>
-            <button type="submit">Upload & Generate</button>
-        </form>
-
-        {% if error %}
-            <div class="error">
-                {{ error }}
-            </div>
-        {% endif %}
-
-        {% if summary %}
-            <div class="result">
-                <h2>📘 Summary</h2>
-                <div class="text-format">
-                    {{ summary }}
-                </div>
-
-                <h2>📝 Important Questions</h2>
-                <div class="text-format">
-                    {{ questions }}
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
-
-</body>
-</html>
+if __name__ == "__main__":
+    app.run(debug=True)
