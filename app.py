@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
-import google.generativeai as genai
+from google import genai
+import os
 
 app = Flask(__name__)
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
-
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+# Use environment variable in Render
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route("/")
 def home():
@@ -19,22 +19,22 @@ def generate():
         if not text.strip():
             return "Please enter study content."
 
-        summary_response = model.generate_content(
-            f"Summarize clearly for exam preparation:\n{text}"
+        response_summary = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"Summarize clearly for exam preparation:\n{text}"
         )
-        summary = summary_response.candidates[0].content.parts[0].text
 
-        question_response = model.generate_content(
-            f"Generate 5 important exam questions:\n{text}"
+        response_questions = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"Generate 5 important exam questions:\n{text}"
         )
-        questions = question_response.candidates[0].content.parts[0].text
 
         return render_template("index.html",
-                               summary=summary,
-                               questions=questions)
+                               summary=response_summary.text,
+                               questions=response_questions.text)
 
     except Exception as e:
         return f"AI Error: {str(e)}"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
