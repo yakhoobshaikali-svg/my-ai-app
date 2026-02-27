@@ -5,73 +5,67 @@ from groq import Groq
 
 app = Flask(__name__)
 
-# Initialize Groq client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def home():
+    return render_template("index.html")
+
+
+@app.route("/upload", methods=["POST"])
+def upload():
 
     summary = None
     questions = None
     error = None
 
-    if request.method == "POST":
+    if "pdf_file" not in request.files:
+        error = "No file uploaded"
+    else:
+        file = request.files["pdf_file"]
 
-        if "pdf_file" not in request.files:
-            error = "No file uploaded"
+        if file.filename == "":
+            error = "No file selected"
+        elif not file.filename.endswith(".pdf"):
+            error = "Please upload a PDF file"
         else:
-            file = request.files["pdf_file"]
+            try:
+                reader = PdfReader(file)
+                text = ""
 
-            if file.filename == "":
-                error = "No file selected"
+                for page in reader.pages:
+                    extracted = page.extract_text()
+                    if extracted:
+                        text += extracted
 
-            elif not file.filename.endswith(".pdf"):
-                error = "Please upload a PDF file"
+                text = text[:3000]
 
-            else:
-                try:
-                    reader = PdfReader(file)
-                    text = ""
+                summary_response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": f"Summarize this for exam preparation in bullet points:\n{text}"
+                        }
+                    ]
+                )
 
-                    for page in reader.pages:
-                        extracted = page.extract_text()
-                        if extracted:
-                            text += extracted
+                summary = summary_response.choices[0].message.content
 
-                    if not text.strip():
-                        error = "Could not extract text from PDF"
-                    else:
-                        # Limit text to avoid rate limits
-                        text = text[:3000]
+                question_response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": f"Generate 5 important exam questions:\n{text}"
+                        }
+                    ]
+                )
 
-                        # SUMMARY
-                        summary_response = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {
-                                    "role": "user",
-                                    "content": f"Summarize this for exam preparation in bullet points:\n{text}"
-                                }
-                            ]
-                        )
+                questions = question_response.choices[0].message.content
 
-                        summary = summary_response.choices[0].message.content
-
-                        # QUESTIONS
-                        question_response = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {
-                                    "role": "user",
-                                    "content": f"Generate 5 important exam questions:\n{text}"
-                                }
-                            ]
-                        )
-
-                        questions = question_response.choices[0].message.content
-
-                except Exception as e:
-                    error = f"Error occurred: {str(e)}"
+            except Exception as e:
+                error = f"Error occurred: {str(e)}"
 
     return render_template(
         "index.html",
