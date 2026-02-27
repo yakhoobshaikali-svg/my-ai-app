@@ -1,70 +1,132 @@
-import os
-from flask import Flask, render_template, request
-from PyPDF2 import PdfReader
-from groq import Groq
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Study AI</title>
 
-app = Flask(__name__)
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        .college-header {
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-@app.route("/", methods=["GET"])
-def home():
-    return render_template("index.html")
+        .college-address {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
 
+        .title {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
 
-@app.route("/upload", methods=["POST"])
-def upload():
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+        }
 
-    summary = None
-    questions = None
-    error = None
+        input[type="file"] {
+            padding: 10px;
+        }
 
-    if "pdf_file" not in request.files:
-        error = "No file uploaded"
-    else:
-        file = request.files["pdf_file"]
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-        if file.filename == "":
-            error = "No file selected"
-        elif not file.filename.endswith(".pdf"):
-            error = "Please upload a PDF file"
-        else:
-            try:
-                reader = PdfReader(file)
-                text = ""
+        button:hover {
+            background: #0056b3;
+        }
 
-                for page in reader.pages:
-                    extracted = page.extract_text()
-                    if extracted:
-                        text += extracted
+        .result {
+            text-align: left;
+            margin-top: 30px;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+        }
 
-                text = text[:3000]
+        .result h2 {
+            color: #1e3c72;
+        }
 
-                summary_response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    messages=[{
-                        "role": "user",
-                        "content": f"Summarize this in clear bullet points:\n{text}"
-                    }]
-                )
+        .text-format {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
 
-                summary = summary_response.choices[0].message.content
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 15px;
+        }
 
-                question_response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    messages=[{
-                        "role": "user",
-                        "content": "Generate exactly 5 important exam questions in numbered format (1-5). Do not include answers.\n" + text
-                    }]
-                )
+    </style>
+</head>
 
-                questions = question_response.choices[0].message.content
+<body>
 
-            except Exception as e:
-                error = str(e)
+    <!-- College Name -->
+    <div class="college-header">
+        Gouthami Institute of Technology & Management for Women
+    </div>
 
-    return render_template("index.html", summary=summary, questions=questions, error=error)
+    <div class="college-address">
+        Proddatur, Andhra Pradesh
+    </div>
 
+    <!-- Project Title -->
+    <div class="title">
+        📘 Smart Study AI – PDF Summary & Question Generator
+    </div>
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    <div class="container">
+
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="pdf_file" accept=".pdf" required>
+            <br><br>
+            <button type="submit">Upload & Generate</button>
+        </form>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if summary %}
+            <div class="result">
+                <h2>📘 Summary</h2>
+                <div class="text-format">
+                    {{ summary }}
+                </div>
+
+                <h2>📝 Important Questions</h2>
+                <div class="text-format">
+                    {{ questions }}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
