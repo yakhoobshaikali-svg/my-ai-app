@@ -4,37 +4,40 @@ import os
 
 app = Flask(__name__)
 
-# Use environment variable in Render
+# Gemini API from Render Environment
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html")
+    summary = None
+    questions = None
 
-@app.route("/generate", methods=["POST"])
-def generate():
-    try:
-        text = request.form["content"]
+    if request.method == "POST":
+        try:
+            uploaded_file = request.files["file"]
 
-        if not text.strip():
-            return "Please enter study content."
+            if uploaded_file:
+                text = uploaded_file.read().decode("utf-8")
 
-        response_summary = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=f"Summarize clearly for exam preparation:\n{text}"
-        )
+                response_summary = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=f"Summarize clearly for exam preparation:\n{text}"
+                )
 
-        response_questions = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=f"Generate 5 important exam questions:\n{text}"
-        )
+                response_questions = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=f"Generate 5 important exam questions:\n{text}"
+                )
 
-        return render_template("index.html",
-                               summary=response_summary.text,
-                               questions=response_questions.text)
+                summary = response_summary.text
+                questions = response_questions.text.split("\n")
 
-    except Exception as e:
-        return f"AI Error: {str(e)}"
+        except Exception as e:
+            summary = f"AI Error: {str(e)}"
+
+    return render_template("index.html",
+                           summary=summary,
+                           questions=questions)
 
 if __name__ == "__main__":
     app.run()
