@@ -1,64 +1,78 @@
-from flask import Flask, render_template, request
-from google import genai
 import os
-import PyPDF2
-import io
+from flask import Flask, render_template, request
+from PyPDF2 import PdfReader
+from groq import Groq
 
 app = Flask(__name__)
 
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+# Initialize Groq client
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def home():
-    summary = None
-    questions = None
+    return render_template("index.html")
 
-    if request.method == "POST":
-        try:
-            uploaded_file = request.files["file"]
+@app.route("/upload", methods=["POST"])
+def upload():
+    if "pdf_file" not in request.files:
+        return "No file uploaded"
 
-            if not uploaded_file:
-                summary = "No file uploaded."
-                return render_template("index.html", summary=summary)
+    file = request.files["pdf_file"]
 
-            if not uploaded_file.filename.endswith(".pdf"):
-                summary = "Please upload a PDF file."
-                return render_template("index.html", summary=summary)
+    if file.filename == "":
+        return "No selected file"
 
-            # Read PDF
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
-            text = ""
+    if not file.filename.endswith(".pdf"):
+        return "Please upload a PDF file"
 
-            for page in pdf_reader.pages:
-                extracted = page.extract_text()
-                if extracted:
-                    text += extracted
+    try:
+        # Read PDF
+        reader = PdfReader(file)
+        text = ""
 
-            if not text.strip():
-                summary = "Unable to extract text from this PDF."
-                return render_template("index.html", summary=summary)
+        for page in reader.pages:
+            text += page.extract_text()
 
-            # Generate Summary
-            response_summary = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=f"Summarize this for exam preparation:\n{text}"
-            )
+        if not text:
+            return "Could not extract text from PDF"
 
-            # Generate Questions
-            response_questions = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=f"Generate 5 important exam questions:\n{text}"
-            )
+        # 🔥 Limit text size to avoid quota issues
+        text = text[:3000]
 
-            summary = response_summary.text
-            questions = response_questions.text.split("\n")
+        # -------- SUMMARY --------
+        summary_response = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Summarize this for exam preparation in simple points:\n{text}"
+                }
+            ]
+        )
 
-        except Exception as e:
-            summary = f"AI Error: {str(e)}"
+        summary = summary_response.choices[0].message.content
 
-    return render_template("index.html",
-                           summary=summary,
-                           questions=questions)
+        # -------- QUESTIONS --------
+        question_response = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Generate 5 important exam questions from this content:\n{text}"
+                }
+            ]
+        )
+
+        questions = question_response.choices[0].message.content
+
+        return render_template(
+            "result.html",
+            summary=summary,
+            questions=questions
+        )
+
+    except Exception as e:
+        return f"Error occurred: {str(e)}"
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
