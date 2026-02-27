@@ -42,37 +42,28 @@ def upload():
 
                 summary_response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": f"Summarize this for exam preparation in bullet points:\n{text}"
-                        }
-                    ]
+                    messages=[{
+                        "role": "user",
+                        "content": f"Summarize this in clear bullet points:\n{text}"
+                    }]
                 )
 
                 summary = summary_response.choices[0].message.content
 
                 question_response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": f"Generate 5 important exam questions:\n{text}"
-                        }
-                    ]
+                    messages=[{
+                        "role": "user",
+                        "content": "Generate exactly 5 important exam questions in numbered format (1-5). Do not include answers.\n" + text
+                    }]
                 )
 
                 questions = question_response.choices[0].message.content
 
             except Exception as e:
-                error = f"Error occurred: {str(e)}"
+                error = str(e)
 
-    return render_template(
-        "index.html",
-        summary=summary,
-        questions=questions,
-        error=error
-    )
+    return render_template("index.html", summary=summary, questions=questions, error=error)
 
 
 if __name__ == "__main__":
